@@ -12,7 +12,7 @@ export class Dake {
 
   async run(args: Array<string>): Promise<void> {
     // read Dakefile with an ES import()
-    const dakeConfig = await import(this.configPath);
+    const dakeConfig = await import(`file://${this.configPath}`);
 
     // loads tasks & make them live -> new Task(taskDef)
     const tasks: { [taskName: string]: Task; } = {};
