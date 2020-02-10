@@ -1,8 +1,6 @@
-export { test, runIfMain } from "https://deno.land/std/testing/mod.ts";
+export { test, runIfMain } from "https://deno.land/std@v0.32.0/testing/mod.ts";
+export { exists } from "https://deno.land/std@v0.32.0/fs/mod.ts";
 export {
-  assertEquals,
-  assertNotEquals,
-  assertThrowsAsync,
-  assertThrows,
-  assert
-} from "https://deno.land/std/testing/asserts.ts";
+  assert,
+  assertEquals
+} from "https://deno.land/std@v0.32.0/testing/asserts.ts";

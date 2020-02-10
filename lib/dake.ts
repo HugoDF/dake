@@ -1,10 +1,13 @@
 import { Task } from "./task.ts";
+import { Logger } from "./types.ts";
 
 export class Dake {
   private configPath: string;
+  private logger: Logger;
 
-  constructor(configPath: string) {
+  constructor(configPath: string, logger: Logger = console) {
     this.configPath = configPath;
+    this.logger = logger;
   }
 
   async run(args: Array<string>): Promise<void> {
@@ -15,9 +18,17 @@ export class Dake {
     const tasks: { [taskName: string]: Task; } = {};
     for (const taskName in dakeConfig) {
       if (typeof dakeConfig[taskName] === "function") {
-        tasks[taskName] = new Task(dakeConfig[taskName], taskName);
+        tasks[taskName] = new Task(
+          dakeConfig[taskName],
+          taskName,
+          this.logger
+        );
       } else if (typeof dakeConfig[taskName].fn === "function") {
-        tasks[taskName] = new Task(dakeConfig[taskName].fn, taskName);
+        tasks[taskName] = new Task(
+          dakeConfig[taskName].fn,
+          taskName,
+          this.logger
+        );
       }
     }
 
@@ -30,10 +41,11 @@ export class Dake {
           if (tasks[preTask.name]) {
             tasks[taskName].addPrerequisite(tasks[preTask.name]);
           } else {
-            tasks[taskName].addPrerequisite(new Task(preTask, preTask.name));
+            tasks[taskName]
+              .addPrerequisite(new Task(preTask, preTask.name, this.logger));
           }
         } else {
-          console
+          this.logger
             .warn(`Attempting to set "${preTask}" as prerequisite to "${
               taskName}", "${preTask}" doesn't exist, this will be a no-op.`);
         }
@@ -53,7 +65,7 @@ export class Dake {
       }
       await Promise.all(requestedTasks.map(t => tasks[t].run()));
     } catch (error) {
-      console.error(error.stack);
+      this.logger.error(error.stack);
     }
   }
 }
