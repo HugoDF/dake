@@ -29,9 +29,20 @@ const mockLogger: any = {
   warn: (...args) => {
     console.error(args);
   },
-  info: () => {},
-  log: () => {}
+  info: noop,
+  log: noop
 };
+
+test(async function testAllowedFileNames() {
+  for(const filename of ['Dakefile', 'Dakefile.ts', 'dakfile.ts']) {
+    const [configPath, cleanup] = await setupDakefile(`
+      export function hello() {}
+    `, filename);
+    const instance = new Dake(configPath, mockLogger);
+    await instance.run(["hello"]);
+    await cleanup();
+  }
+})
 
 test(async function testHello() {
   const [configPath, cleanup] = await setupDakefile(`
