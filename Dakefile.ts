@@ -1,8 +1,7 @@
 import { run_command } from "./mod.ts";
 
 export async function fmt() {
-  const { stdout } = await run_command("deno fmt **/*.ts");
-  console.log(stdout);
+  await run_command("deno fmt **/*.ts");
 }
 
 export async function test() {
