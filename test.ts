@@ -21,11 +21,23 @@ const setupDakefile = async (
 
 const noop = () => {};
 
+const mockLogger: any = {
+  ...console,
+  error: (...args) => {
+    throw new Error(`Error called with: ${JSON.stringify(args)}`);
+  },
+  warn: (...args) => {
+    console.error(args);
+  },
+  info: () => {},
+  log: () => {}
+};
+
 test(async function testHello() {
   const [configPath, cleanup] = await setupDakefile(`
     export function hello() {}
   `);
-  const instance = new Dake(configPath, { log: noop } as any);
+  const instance = new Dake(configPath, mockLogger);
   await instance.run(["hello"]);
   await cleanup();
 });
@@ -41,7 +53,7 @@ test(async function testWritesFiles() {
       );
     }
   `);
-  const instance = new Dake(configPath, { log: noop } as any);
+  const instance = new Dake(configPath, mockLogger);
   await instance.run(["write"]);
   assert(await exists(tmpPath));
   const actual = new TextDecoder().decode(await Deno.readFile(tmpPath));
@@ -68,7 +80,7 @@ test(async function prerequisitesStringArray() {
   };
   const instance = new Dake(
     configPath,
-    { log: noop } as any
+    mockLogger
   );
   await instance.run(["run"]);
   await cleanup();
@@ -99,7 +111,7 @@ test(async function prerequisitesFunctionArray() {
   };
   const instance = new Dake(
     configPath,
-    { log: noop } as any
+    mockLogger
   );
   await instance.run(["run"]);
   await cleanup();
