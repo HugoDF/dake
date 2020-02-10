@@ -59,11 +59,23 @@ export class Dake {
     // TODO: subtasks
     // TODO: Make-like builds: if A is run and B depends on the output of A, run B after A completes
     try {
+      const taskFlag = args.findIndex(a => a === "-t" || a === "--tasks") + 1;
+      if (taskFlag > 0) {
+        console
+          .log(`Tasks:\n${definedTaskNames.map(s => `- ${s}`).join("\n")}`);
+        return;
+      }
       const requestedTasks: Array<string> = args.map(a => a.trim());
       if (requestedTasks.some(t => !definedTaskNames.includes(t))) {
         // handle error with requesting an undefined task
+        this.logger
+          .error(`${requestedTasks.map(s => `"${s}"`).join(", ")} defined in ${
+            this.configPath}.`);
+        return;
       }
-      await Promise.all(requestedTasks.map(t => tasks[t].run()));
+      for (const taskName of requestedTasks) {
+        await tasks[taskName].run();
+      }
     } catch (error) {
       this.logger.error(error.stack);
     }
