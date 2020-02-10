@@ -18,15 +18,17 @@ export class Task {
   }
 
   async run() {
+    this.logger.info(`Running "${this.name}"`);
     if (this.prerequisites.length > 0) {
       this.logger
-        .log(`Running prerequisites "${this.prerequisites.map(p => p.name)
+        .info(`Running "${this.name}" prerequisite(s) "${this.prerequisites
+          .map(p => p.name)
           .join(", ")}"`);
     }
     for (const p of this.prerequisites) {
       await p.run();
     }
-    this.logger.log(`Running "${this.name}"`);
     await this.fn();
+    this.logger.info(`Completed "${this.name}"`);
   }
 }
