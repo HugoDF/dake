@@ -5,17 +5,19 @@ export async function fmt() {
 }
 
 export async function test() {
-  const { stdout } = await run_command("cat ./dist/foo");
+  const { stdout } = await run_command("deno test -A");
   console.log(stdout);
 }
 
-test.prerequisites = [echo];
-
-async function echo() {
-  await run_command("mkdir -p ./dist");
-  const data = new TextEncoder().encode("Hello world\n");
-  await Deno.writeFile("./dist/foo", data);
+export async function ping() {
+  console.log("pong");
 }
+
+export const todo = () => console.log(`TODO:
+- document "-t, --tasks" option
+- add help command
+- add license
+`);
 
 export const secret = {
   fn() {
