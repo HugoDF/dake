@@ -1,4 +1,4 @@
-import { Logger } from "./types.ts";
+import { Logger } from "../deps.ts";
 
 export class Task {
   prerequisites: Array<Task>;

@@ -1,5 +1,5 @@
 const { args, cwd, exit } = Deno;
-import { exists } from "./deps.ts";
+import { exists, log } from "./deps.ts";
 import { Dake } from "./lib/dake.ts";
 
 const DAKE_FILE_NAMES = ["Dakefile", "Dakefile.ts", "dakefile", "dakefile.ts"];
@@ -33,11 +33,11 @@ async function findConfigFile(): Promise<string> {
 export async function run() {
   try {
     const configFilePath = await findConfigFile();
-    console.info(`Config file found at ${configFilePath}`);
+    log.info(`Config file found at ${configFilePath}`);
     const d = new Dake(configFilePath);
     await d.run(args);
   } catch (err) {
-    console.error(`Top-level error caught: ${err.stack}`);
+    log.error(`Top-level error caught: ${err.stack}`);
     exit(1);
   }
 }

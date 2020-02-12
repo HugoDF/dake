@@ -1,11 +1,11 @@
+import { log, Logger } from "../deps.ts";
 import { Task } from "./task.ts";
-import { Logger } from "./types.ts";
 
 export class Dake {
   private configPath: string;
   private logger: Logger;
 
-  constructor(configPath: string, logger: Logger = console) {
+  constructor(configPath: string, logger: Logger = log) {
     this.configPath = configPath;
     this.logger = logger;
   }
@@ -46,7 +46,7 @@ export class Dake {
           }
         } else {
           this.logger
-            .warn(`Attempting to set "${preTask}" as prerequisite to "${
+            .warning(`Attempting to set "${preTask}" as prerequisite to "${
               taskName}", "${preTask}" doesn't exist, this will be a no-op.`);
         }
       }
