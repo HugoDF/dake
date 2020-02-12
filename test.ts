@@ -34,7 +34,9 @@ const mockLogger: any = {
 };
 
 test(async function testAllowedFileNames() {
-  for (const filename of ["Dakefile", "Dakefile.ts", "dakefile.ts"]) {
+  for (const filename of ["Dakefile", "Dakefile.ts", "dakefile",
+    "dakefile.ts"])
+  {
     const [configPath, cleanup] = await setupDakefile(`
       export function hello() {}
     `, filename);

@@ -2,7 +2,7 @@ const { args, cwd, exit } = Deno;
 import { exists } from "./deps.ts";
 import { Dake } from "./lib/dake.ts";
 
-const DAKE_FILE_NAMES = ["Dakefile", "Dakefile.ts", "dakefile.ts"];
+const DAKE_FILE_NAMES = ["Dakefile", "Dakefile.ts", "dakefile", "dakefile.ts"];
 
 /**
  * Get path to Dake config file.
