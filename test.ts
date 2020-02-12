@@ -1,5 +1,5 @@
 import { test, assert, assertEquals, exists } from "./dev_deps.ts";
-import { Dake } from "./lib/dake.ts";
+import { run } from "./mod.ts";
 
 /**
  * Sets up a Dakefile in a tmp directory
@@ -11,54 +11,39 @@ import { Dake } from "./lib/dake.ts";
 const setupDakefile = async (
   content: string,
   fileName: string = "Dakefile"
-): Promise<[string, Function]> => {
+): Promise<[Function]> => {
   const enc = new TextEncoder();
   const dir = await Deno.makeTempDir();
   const filePath = `${dir}/${fileName}`;
   await Deno.writeFile(filePath, enc.encode(content));
-  return [filePath, () => Deno.remove(filePath)];
-};
-
-const noop = () => {};
-
-const mockLogger: any = {
-  ...console,
-  error: (...args) => {
-    throw new Error(`Error called with: ${JSON.stringify(args)}`);
-  },
-  warn: (...args) => {
-    console.error(args);
-  },
-  info: noop,
-  log: noop
+  Deno.chdir(dir);
+  return [() => Deno.remove(filePath)];
 };
 
 test(async function testAllowedFileNames() {
   for (const filename of ["Dakefile", "Dakefile.ts", "dakefile",
     "dakefile.ts"])
   {
-    const [configPath, cleanup] = await setupDakefile(`
+    const [cleanup] = await setupDakefile(`
       export function hello() {}
     `, filename);
-    const instance = new Dake(configPath, mockLogger);
-    await instance.run(["hello"]);
+    await run(["hello"]);
     await cleanup();
   }
 });
 
 test(async function testHello() {
-  const [configPath, cleanup] = await setupDakefile(`
+  const [cleanup] = await setupDakefile(`
     export function hello() {}
   `);
-  const instance = new Dake(configPath, mockLogger);
-  await instance.run(["hello"]);
+  await run(["hello"]);
   await cleanup();
 });
 
 test(async function testWritesFiles() {
   const tmpDir = await Deno.makeTempDir();
   const tmpPath = `${tmpDir}/file`;
-  const [configPath, cleanup] = await setupDakefile(`
+  const [cleanup] = await setupDakefile(`
     export async function write() {
       await Deno.writeFile(
         "${tmpPath}",
@@ -66,8 +51,7 @@ test(async function testWritesFiles() {
       );
     }
   `);
-  const instance = new Dake(configPath, mockLogger);
-  await instance.run(["write"]);
+  await run(["write"]);
   assert(await exists(tmpPath));
   const actual = new TextDecoder().decode(await Deno.readFile(tmpPath));
   await cleanup();
@@ -75,7 +59,7 @@ test(async function testWritesFiles() {
 });
 
 test(async function prerequisitesStringArray() {
-  const [configPath, cleanup] = await setupDakefile(`
+  const [cleanup] = await setupDakefile(`
     export async function run() {
       console.test('run call');
     }
@@ -91,11 +75,7 @@ test(async function prerequisitesStringArray() {
   (console as any).test = (arg: string) => {
     calls.push(arg);
   };
-  const instance = new Dake(
-    configPath,
-    mockLogger
-  );
-  await instance.run(["run"]);
+  await run(["run"]);
   await cleanup();
   assert(calls.length > 0);
   assertEquals(calls, [
@@ -106,7 +86,7 @@ test(async function prerequisitesStringArray() {
 });
 
 test(async function prerequisitesFunctionArray() {
-  const [configPath, cleanup] = await setupDakefile(`
+  const [cleanup] = await setupDakefile(`
     export async function run() {
       console.test('run call');
     }
@@ -122,11 +102,7 @@ test(async function prerequisitesFunctionArray() {
   (console as any).test = (arg: string) => {
     calls.push(arg);
   };
-  const instance = new Dake(
-    configPath,
-    mockLogger
-  );
-  await instance.run(["run"]);
+  await run(["run"]);
   await cleanup();
   assert(calls.length > 0);
   assertEquals(calls, [
