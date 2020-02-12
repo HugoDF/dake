@@ -1,1 +1,4 @@
-export type Logger = __console.Console;
+export interface DakeFlags {
+  tasks: boolean;
+}
+export type TaskName = string;
