@@ -5,10 +5,10 @@ TypeScript build tool, similar to Jake, Make or Rake. Built to work with Deno.
 
 ## Installation
 
-> Tested with Deno v0.32 and tagged under v0.32.0-alpha.2
+> Tested with Deno v0.32 and tagged under v0.32.0-alpha.3
 
 ```sh
-deno install --allow-read --allow-run dake https://raw.githubusercontent.com/HugoDF/dake/v0.32.0-alpha.2/cli.ts
+deno install --allow-read --allow-run dake https://raw.githubusercontent.com/HugoDF/dake/v0.32.0-alpha.3/cli.ts
 ```
 
 You should then be able to run `dake` and get an error since there is no Dakefile in the directory you're in.
